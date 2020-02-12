@@ -1,0 +1,26 @@
+version: "3.7"
+services:
+  pdns-mysql:
+    container_name: pdns-mysql
+    image: mariadb:10.1
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: supersecret
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+
+  pdns:
+    container_name: pdns
+    image: tslopes/powerdns_api
+    restart: always
+    depends_on:
+      - pdns-mysql
+    links:
+      - pdns-mysql:mysql
+    ports:
+      - "53:53"
+      - "53:53/udp"
+      - "8081:8081"
+    environment:
+      MYSQL_USER: root
+      MYSQL_PASS: supersecret
